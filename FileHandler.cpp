@@ -120,7 +120,7 @@ void FileHandler::saveToFile() {
  */
 
 // geaendert 'const std::tm logTime' to 'const std::tm& logTime'
-void FileHandler::addLog(const std::tm& logTime, const std::string& source, const std::string& data, int poolID) {
+void FileHandler::addLog(const std::tm& logTime, const std::string& source, const std::string& data) {
     std::string hash = generateHash(data, 50);
     addToHashmap(hash, data);
 

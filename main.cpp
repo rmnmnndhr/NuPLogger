@@ -7,6 +7,8 @@ void task3(Logger& logger) {
 
 void task2(Logger& logger) {
     logger.log("task2", "Task2 log entry.");
+
+    logger.log("task2", "hello from task2");
 }
 
 int main() {
@@ -14,7 +16,7 @@ int main() {
 
 
     logger.registerSource("task3");
-    logger.registerSource("task3");
+    logger.registerSource("task2");
 
     for (int i = 0; i < 5; ++i) {
         task3(logger); 
@@ -24,9 +26,10 @@ int main() {
     std::this_thread::sleep_for(std::chrono::seconds(1));  
 
     logger.suspend();  // Pause logging
+
+    task3(logger); 
+    task2(logger); 
     std::this_thread::sleep_for(std::chrono::seconds(2)); 
-    task3(logger);
-    task3(logger);
     logger.resume();   // Resume logging
 
     return 0;

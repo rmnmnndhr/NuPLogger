@@ -13,7 +13,7 @@ public:
     FileHandler(const std::string& filename);
     ~FileHandler();
 
-    void addLog(const std::tm& logTime, const std::string& source, const std::string& data, int poolID);
+    void addLog(const std::tm& logTime, const std::string& source, const std::string& data);
     void saveToFile();
     void loadFromFile();
 
