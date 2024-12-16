@@ -138,7 +138,12 @@ void Logger::processLogs() {
             auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
             std::tm* logTime = std::localtime(&now);
 
-            fileHandler.addLog(*logTime, logData.first, logData.second, 0);
+            std::ostringstream timeStream;
+            timeStream << std::put_time(logTime, "%Y-%m-%d %H:%M:%S");
+
+            fileHandler.addLog(*logTime, logData.first, logData.second);
+
+            std::cout << timeStream.str() << " | " << logData.first << " | " << logData.second<< std::endl;
         }
     }
 }
