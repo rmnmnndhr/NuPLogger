@@ -14,15 +14,34 @@ std::vector<std::string> splitStringMain(const std::string &str, char delimiter)
 
     return tokens;
 }
-
-void task3(Logger& logger) {
-    logger.log("task3", "Task3 log entry.");
-}
-
-void task2(Logger& logger) {
-    logger.log("task2", "Task2 log entry.");
-
-    logger.log("task2", "hello from task2");
+double avg;
+void threadFunction(Logger &logger, const std::string taskid, const std::string &data) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    std::ostringstream oss;
+    oss << "Daten von Thread " << taskid << ": " << data;
+    int counter = 0;
+    std::vector<long long> durations;
+    while (counter < 200) {
+        auto start = std::chrono::high_resolution_clock::now();
+        logger.log(taskid, data);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        durations.push_back(duration);
+        counter++;
+        //std::this_thread::sleep_for(std::chrono::milliseconds (10));
+        if (counter == 15 && taskid == "task10") {
+            logger.suspend();
+        } else if (counter == 25 && taskid == "task10") {
+            logger.resume();
+        }
+    }
+    long long sum = 0;
+    for (long long d: durations) {
+        sum += d;
+    }
+    double averageDuration = static_cast<double>(sum) / durations.size();
+    std::cout << averageDuration << std::endl;
+    avg += averageDuration;
 }
 
 int main() {
@@ -33,22 +52,28 @@ int main() {
         Logger &logger = Logger::getInstance("log.txt");
 
 
-    logger.registerSource("task3");
-    logger.registerSource("task2");
+        int numberOfThreads{20};
+        std::vector<std::thread> threads;
+        for (int i = 10; i < numberOfThreads + 10; ++i) {
+            logger.registerSource("task" + std::to_string(i));
+            threads.emplace_back(threadFunction, std::ref(logger), "task" + std::to_string(i),
+                                 "Task" + std::to_string(i) + " log entry.");
+        }
 
-    for (int i = 0; i < 5; ++i) {
-        task3(logger); 
-        task2(logger);  
-    }
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));  
-
-    logger.suspend();  // Pause logging
-
-    task3(logger);
-    task2(logger);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    logger.resume();   // Resume logging
+        //logger.suspend();  // Pause logging
+        //std::this_thread::sleep_for(std::chrono::milliseconds (110));
+        //logger.resume();   // Resume logging
+        std::cout << "end" << std::endl;
+        for (auto &t: threads) {
+            if (t.joinable()) {
+                t.join();
+            }
+        }
+        std::cout << "joined" << std::endl;
+        std::cout << "Total Average:" << avg/numberOfThreads << std::endl;
+        double averageDuration = static_cast<double>(logger.logTimeMicro) / logger.logCount;
+        std::cout << "Log Average:" << averageDuration << std::endl;
     } else if (Programmtype == 2) {
         std::ifstream file("log.txt");
         if (!file.is_open()) {

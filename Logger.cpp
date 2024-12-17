@@ -132,6 +132,7 @@ void Logger::processLogs() {
         }
 
         while (!logQueue.empty()) {
+            auto start = std::chrono::high_resolution_clock::now();
             auto logData = logQueue.front();
             logQueue.pop();
 
@@ -144,6 +145,10 @@ void Logger::processLogs() {
             fileHandler.addLog(*logTime, logData.first, logData.second);
 
             std::cout << timeStream.str() << " | " << logData.first << " | " << logData.second<< std::endl;
+            auto end = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            logTimeMicro += duration;
+            logCount++;
         }
     }
 }

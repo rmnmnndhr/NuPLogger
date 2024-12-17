@@ -22,7 +22,8 @@ public:
     void log(const std::string& source, const std::string& data);
     void suspend();
     void resume();
-
+    long long logTimeMicro{0};
+    int logCount{0};
     ~Logger();
 
 private:
